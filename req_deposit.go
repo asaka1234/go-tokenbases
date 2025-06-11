@@ -1,16 +1,9 @@
-package go_buy365
+package go_tokenbases
 
-import (
-	"crypto/tls"
-	"encoding/json"
-	"fmt"
-	"github.com/asaka1234/go-buy365/utils"
-	"github.com/mitchellh/mapstructure"
-	"time"
-)
+/*
 
 // pre-order
-func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error) {
+func (cli *Client) Deposit(req TokenBasesDepositReq) (*TokenBasesDepositResponse, error) {
 
 	rawURL := cli.Params.DepositUrl
 
@@ -24,7 +17,7 @@ func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error)
 	params["sign"] = signStr
 
 	//返回值会放到这里
-	var result Buy365DepositCommonResponse
+	var result TokenBasesDepositCommonResponse
 
 	resp2, err := cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).
@@ -50,7 +43,7 @@ func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error)
 		}
 
 		//step-2
-		var resp3 Buy365DepositResponse
+		var resp3 TokenBasesDepositResponse
 		if err := mapstructure.Decode(data, &resp3); err != nil {
 			return nil, err
 		}
@@ -58,9 +51,11 @@ func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error)
 		return &resp3, nil
 	}
 
-	return &Buy365DepositResponse{
+	return &TokenBasesDepositResponse{
 		Code:   result.Code,
 		Status: result.Status,
 		Msg:    result.Msg,
 	}, fmt.Errorf("result is failed")
 }
+
+*/

@@ -1,8 +1,8 @@
-package go_buy365
+package go_tokenbases
 
 func getHeaders() map[string]string {
 	return map[string]string{
-		"Content-Type": "multipart/form-data",
+		"Content-Type": "application/json",
 		"charset":      "utf-8",
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cast"
 	"net/url"
 	"sort"
+	"strings"
 )
 
 // 计算请求签名
@@ -60,29 +61,29 @@ func VerifySignDeposit(params map[string]interface{}, signKey string) bool {
 
 // 计算withdraw请求签名
 // v1v2...组成签名字符串
-func SignWithdraw(paramMap map[string]interface{}, accessKey string) string {
+func Sign(paramMap map[string]interface{}, accessKey string) string {
 
-	keys := lo.Keys(paramMap)
-
-	// 1. 参数名按照ASCII码表升序排序
-	sort.Strings(keys)
+	keys := []string{"body", "key", "nonce", "timestamp"}
 
 	//拼接签名原始字符串（value直接拼）
 	rawString := ""
 	lo.ForEach(keys, func(x string, index int) {
-		value := cast.ToString(paramMap[x])
+		var value string
+		if x == "key" {
+			value = accessKey
+		} else {
+			value = cast.ToString(paramMap[x])
+		}
 		rawString += value
 	})
-	// 3. 将secretKey拼接到最后
-	rawString += accessKey
 
 	//4. 计算md5签名
-	signResult := GetMD5([]byte(rawString))
+	signResult := strings.ToLower(GetMD5([]byte(rawString)))
 	return signResult
 }
 
 // 验证签名
-func VerifySignWithdraw(params map[string]interface{}, signKey string) bool {
+func VerifySign(params map[string]interface{}, signKey string) bool {
 	// Check if sign exists in params
 	signValue, exists := params["sign"]
 	if !exists {
@@ -94,7 +95,7 @@ func VerifySignWithdraw(params map[string]interface{}, signKey string) bool {
 	delete(params, "sign")
 
 	// Generate current signature
-	currentKey := SignWithdraw(params, signKey)
+	currentKey := Sign(params, signKey)
 
 	// Compare the signatures
 	return key == currentKey

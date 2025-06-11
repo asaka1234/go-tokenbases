@@ -1,14 +1,10 @@
-package go_buy365
+package go_tokenbases
 
-import (
-	"fmt"
-	"testing"
-)
-
+/*
 func TestWithdraw(t *testing.T) {
 
 	//构造client
-	cli := NewClient(nil, &Buy365InitParams{MERCHANT_ID, ACCESS_KEY, BACK_KEY, DEPOSIT_URL, WITHDRAW_URL, WITHDRAW_CONFIRM_URL, ORDERLIST_URL})
+	cli := NewClient(nil, &TokenBasesInitParams{MERCHANT_ID, ACCESS_KEY, BACK_KEY, DEPOSIT_URL, WITHDRAW_URL, WITHDRAW_CONFIRM_URL, ORDERLIST_URL})
 
 	//发请求
 	resp, err := cli.Withdraw(GenWithdrawRequestDemo())
@@ -19,9 +15,9 @@ func TestWithdraw(t *testing.T) {
 	fmt.Printf("resp:%+v\n", resp)
 }
 
-func GenWithdrawRequestDemo() Buy365WithdrawReq {
-	return Buy365WithdrawReq{
-		Data: []Buy365WithdrawData{
+func GenWithdrawRequestDemo() TokenBasesWithdrawReq {
+	return TokenBasesWithdrawReq{
+		Data: []TokenBasesWithdrawData{
 			{
 				UserName:    "你好", //商户uid
 				BankCardNo:  "30787",
@@ -32,3 +28,4 @@ func GenWithdrawRequestDemo() Buy365WithdrawReq {
 		},
 	}
 }
+*/

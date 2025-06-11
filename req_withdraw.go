@@ -1,13 +1,8 @@
-package go_buy365
+package go_tokenbases
 
-import (
-	"crypto/tls"
-	"encoding/json"
-	"github.com/asaka1234/go-buy365/utils"
-)
-
+/*
 // withdraw
-func (cli *Client) Withdraw(req Buy365WithdrawReq) (*Buy365WithdrawResponse, error) {
+func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*TokenBasesWithdrawResponse, error) {
 
 	rawURL := cli.Params.WithdrawUrl
 
@@ -24,7 +19,7 @@ func (cli *Client) Withdraw(req Buy365WithdrawReq) (*Buy365WithdrawResponse, err
 	params["sign"] = signStr
 
 	//返回值会放到这里
-	var result Buy365WithdrawResponse
+	var result TokenBasesWithdrawResponse
 
 	_, err = cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).
@@ -41,3 +36,5 @@ func (cli *Client) Withdraw(req Buy365WithdrawReq) (*Buy365WithdrawResponse, err
 
 	return &result, err
 }
+
+*/

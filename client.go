@@ -1,19 +1,19 @@
-package go_buy365
+package go_tokenbases
 
 import (
-	"github.com/asaka1234/go-buy365/utils"
+	"github.com/asaka1234/go-tokenbases/utils"
 	"github.com/go-resty/resty/v2"
 )
 
 type Client struct {
-	Params *Buy365InitParams
+	Params *TokenBasesInitParams
 
 	ryClient  *resty.Client
 	debugMode bool
 	logger    utils.Logger
 }
 
-func NewClient(logger utils.Logger, params *Buy365InitParams) *Client {
+func NewClient(logger utils.Logger, params *TokenBasesInitParams) *Client {
 	return &Client{
 		Params: params,
 
