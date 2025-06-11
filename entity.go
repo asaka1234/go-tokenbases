@@ -4,7 +4,7 @@ type TokenBasesInitParams struct {
 	MerchantId string `json:"merchantId" mapstructure:"merchantId" config:"merchantId"  yaml:"merchantId"` // merchantId
 	AccessKey  string `json:"accessKey" mapstructure:"accessKey" config:"accessKey"  yaml:"accessKey"`
 
-	BaseUrl string `json:"BaseUrl" mapstructure:"BaseUrl" config:"BaseUrl"  yaml:"BaseUrl"`
+	BaseUrl string `json:"baseUrl" mapstructure:"baseUrl" config:"baseUrl"  yaml:"baseUrl"`
 }
 
 // ----------create address-------------------------
