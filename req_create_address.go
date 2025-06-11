@@ -2,6 +2,7 @@ package go_tokenbases
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"github.com/asaka1234/go-tokenbases/utils"
 	"github.com/mitchellh/mapstructure"
@@ -15,7 +16,11 @@ func (cli *Client) CreateAddress(req TokenBasesCreateAddressReq) (*TokenBasesCre
 	mapstructure.Decode(req, &params)
 
 	//补充字段
-	params["body"].(map[string]interface{})["merchantId"] = cli.Params.MerchantId
+	body := params["body"].(map[string]interface{})
+	body["merchantId"] = cli.Params.MerchantId
+
+	bd, _ := json.Marshal(body)
+	params["body"] = string(bd)
 
 	//签名
 	signStr := utils.Sign(params, cli.Params.AccessKey)

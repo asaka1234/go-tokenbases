@@ -20,7 +20,7 @@ type TokenBasesCreateAddressReq struct {
 
 type CreateAddressBody struct {
 	ChainName string `json:"chainName" mapstructure:"chainName"`
-	Count     int    `json:"count" mapstructure:"count"`
+	Count     int    `json:"count" mapstructure:"count"` //TODO 实际没用,因为每次只返回唯一一个.
 	//sdk赋值
 	//MerchantID string `json:"merchantId" mapstructure:"merchantId"`
 }

@@ -29,7 +29,7 @@ func GenCreateAddressDemo() TokenBasesCreateAddressReq {
 		Timestamp: time.Now().Unix(),
 		Nonce:     nonce,
 		Body: CreateAddressBody{
-			ChainName: "TRON", //商户uid
+			ChainName: "TRX", //商户uid
 			Count:     5,
 		},
 	}
