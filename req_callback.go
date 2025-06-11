@@ -9,7 +9,7 @@ import (
 )
 
 // 充值的回调处理(传入一个处理函数)
-func (cli *Client) DepositCallBack(req TokenBasesDepositCallbackReq, processor func(DepositCallbackBodyContent) error) error {
+func (cli *Client) DepositCallBack(req TokenBasesCallbackReq, processor func(DepositCallbackBodyContent) error) error {
 	//1. 验证签名
 	var params map[string]interface{}
 	mapstructure.Decode(req, &params)
@@ -31,33 +31,10 @@ func (cli *Client) DepositCallBack(req TokenBasesDepositCallbackReq, processor f
 	return processor(bodyContent)
 }
 
-// 返回
-func (cli *Client) DepositCallBackResp(code string, msg string) TokenBasesDepositCallbackResp {
-	//构造data
-	nonce, _ := utils.RandInt32()
-	data := DepositCallbackData{
-		Body:      "",
-		Nonce:     nonce,
-		Timestamp: time.Now().Unix(),
-	}
-
-	//赋值sign
-	var params map[string]interface{}
-	mapstructure.Decode(data, &params)
-	signStr := utils.Sign(params, cli.Params.AccessKey)
-	data.Sign = signStr
-
-	return TokenBasesDepositCallbackResp{
-		Errno:  code,
-		Errmsg: msg,
-		Data:   []DepositCallbackData{data},
-	}
-}
-
 //==========================================
 
 // 充值的回调处理(传入一个处理函数)
-func (cli *Client) WithdrawCallBack(req TokenBasesWithdrawCallbackReq, processor func(WithdrawCallbackBodyContent) error) error {
+func (cli *Client) WithdrawCallBack(req TokenBasesCallbackReq, processor func(WithdrawCallbackBodyContent) error) error {
 	//验证签名
 	var params map[string]interface{}
 	mapstructure.Decode(req, &params)
@@ -79,11 +56,13 @@ func (cli *Client) WithdrawCallBack(req TokenBasesWithdrawCallbackReq, processor
 	return processor(bodyContent)
 }
 
+//-----------callback的resp========
+
 // code='000'是成功
-func (cli *Client) WithdrawCallBackResp(code string, msg string) TokenBasesWithdrawCallbackResp {
+func (cli *Client) CallBackResp(code string, msg string) TokenBasesCallbackResp {
 	//构造data
 	nonce, _ := utils.RandInt32()
-	data := TokenBasesWithdrawCallbackDataItem{
+	data := CallbackData{
 		Body:      "",
 		Nonce:     nonce,
 		Timestamp: time.Now().Unix(),
@@ -95,9 +74,9 @@ func (cli *Client) WithdrawCallBackResp(code string, msg string) TokenBasesWithd
 	signStr := utils.Sign(params, cli.Params.AccessKey)
 	data.Sign = signStr
 
-	return TokenBasesWithdrawCallbackResp{
+	return TokenBasesCallbackResp{
 		Errno:  code,
 		Errmsg: msg,
-		Data:   []TokenBasesWithdrawCallbackDataItem{data},
+		Data:   []CallbackData{data},
 	}
 }

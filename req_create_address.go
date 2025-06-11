@@ -7,25 +7,36 @@ import (
 	"fmt"
 	"github.com/asaka1234/go-tokenbases/utils"
 	"github.com/mitchellh/mapstructure"
+	"time"
 )
 
 func (cli *Client) CreateAddress(req TokenBasesCreateAddressReq) (*AddressContent, error) {
 
-	rawURL := cli.Params.CreateAddressUrl
+	rawURL := cli.Params.BaseUrl + "/mch/address/create"
 
 	var params map[string]interface{}
 	mapstructure.Decode(req, &params)
 
 	//补充字段
-	body := params["body"].(map[string]interface{})
-	body["merchantId"] = cli.Params.MerchantId
+	params["merchantId"] = cli.Params.MerchantId
+	bd, _ := json.Marshal(params)
 
-	bd, _ := json.Marshal(body)
-	params["body"] = string(bd)
+	//构造最终请求
+	nonce, _ := utils.RandInt32()
+	request := TokenBasesReq{
+		Timestamp: time.Now().Unix(),
+		Nonce:     nonce,
+		Body:      string(bd),
+	}
+
+	//----------------------------
+
+	var params3 map[string]interface{}
+	mapstructure.Decode(request, &params3)
 
 	//签名
-	signStr := utils.Sign(params, cli.Params.AccessKey)
-	params["sign"] = signStr
+	signStr := utils.Sign(params3, cli.Params.AccessKey)
+	params3["sign"] = signStr
 
 	//返回值会放到这里
 	var result TokenBasesCreateAddressResp
@@ -34,7 +45,7 @@ func (cli *Client) CreateAddress(req TokenBasesCreateAddressReq) (*AddressConten
 		SetCloseConnection(true).
 		R().
 		SetHeaders(getHeaders()).
-		SetBody(params).
+		SetBody(params3).
 		SetDebug(cli.debugMode).
 		SetResult(&result).
 		Post(rawURL)
@@ -62,8 +73,7 @@ func (cli *Client) CreateAddress(req TokenBasesCreateAddressReq) (*AddressConten
 		return nil, err
 	}
 
-	fmt.Printf("url:%s\n", rawURL)
-	fmt.Printf("resp:%d, %+v\n", resp.StatusCode(), string(resp.Body()))
+	fmt.Printf("resp:%+v\n", string(resp.Body()))
 
 	return &bodyContent, nil
 }

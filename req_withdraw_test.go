@@ -2,15 +2,14 @@ package go_tokenbases
 
 import (
 	"fmt"
-	"github.com/asaka1234/go-tokenbases/utils"
 	"testing"
-	"time"
 )
 
 func TestWithdraw(t *testing.T) {
 
+	vlog := VLog{}
 	//构造client
-	cli := NewClient(nil, &TokenBasesInitParams{MERCHANT_ID, ACCESS_KEY, CreateAddressUrl, WITHDRAW_URL})
+	cli := NewClient(vlog, &TokenBasesInitParams{MERCHANT_ID, ACCESS_KEY, BASE_URL})
 	cli.SetDebugModel(true)
 
 	//发请求
@@ -24,18 +23,12 @@ func TestWithdraw(t *testing.T) {
 
 func GenWithdrawRequestDemo() TokenBasesWithdrawReq {
 
-	nonce, _ := utils.RandInt32()
-
 	return TokenBasesWithdrawReq{
-		Timestamp: time.Now().Unix(),
-		Nonce:     nonce,
-		Body: WithdrawBodyContent{
-			Address:    "TYBFrHn2AV6V1Ce8kZsXbRfsvk8cpZNmXV",
-			Amount:     "2.1",
-			ChainName:  "TRX", //商户uid
-			BusinessID: "123",
-			Memo:       "",
-			TokenName:  "TUSDT",
-		},
+		Address:    "TYBFrHn2AV6V1Ce8kZsXbRfsvk8cpZNmXV",
+		Amount:     "2.1",
+		ChainName:  "TRX", //商户uid
+		BusinessID: "123",
+		Memo:       "",
+		TokenName:  "TUSDT",
 	}
 }

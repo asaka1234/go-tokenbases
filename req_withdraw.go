@@ -7,26 +7,37 @@ import (
 	"fmt"
 	"github.com/asaka1234/go-tokenbases/utils"
 	"github.com/mitchellh/mapstructure"
+	"time"
 )
 
 // withdraw
 func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*WithdrawRespDataBodyContent, error) {
 
-	rawURL := cli.Params.WithdrawUrl
+	rawURL := cli.Params.BaseUrl + "/mch/withdraw"
 
 	var params map[string]interface{}
 	mapstructure.Decode(req, &params)
 
 	//补充字段
-	body := params["body"].(map[string]interface{})
-	body["merchantId"] = cli.Params.MerchantId
+	params["merchantId"] = cli.Params.MerchantId
+	bd, _ := json.Marshal(params)
 
-	bd, _ := json.Marshal(body)
-	params["body"] = string(bd)
+	//构造最终请求
+	nonce, _ := utils.RandInt32()
+	request := TokenBasesReq{
+		Timestamp: time.Now().Unix(),
+		Nonce:     nonce,
+		Body:      string(bd),
+	}
+
+	//----------------------------
+
+	var params3 map[string]interface{}
+	mapstructure.Decode(request, &params3)
 
 	//签名
-	signStr := utils.Sign(params, cli.Params.AccessKey)
-	params["sign"] = signStr
+	signStr := utils.Sign(params3, cli.Params.AccessKey)
+	params3["sign"] = signStr
 
 	//返回值会放到这里
 	var result TokenBasesWithdrawResp
@@ -35,7 +46,7 @@ func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*WithdrawRespDataBodyCon
 		SetCloseConnection(true).
 		R().
 		SetHeaders(getHeaders()).
-		SetBody(params).
+		SetBody(params3).
 		SetDebug(cli.debugMode).
 		SetResult(&result).
 		Post(rawURL)
@@ -46,15 +57,6 @@ func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*WithdrawRespDataBodyCon
 		}
 		return nil, err
 	}
-
-	/*
-		//解析data
-		var data WithdrawRespData
-		err = json.Unmarshal([]byte(result.Data), &data)
-		if err != nil {
-			return nil, err
-		}
-	*/
 
 	//验证签名
 	var params2 map[string]interface{}

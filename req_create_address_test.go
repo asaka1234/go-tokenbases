@@ -2,15 +2,30 @@ package go_tokenbases
 
 import (
 	"fmt"
-	"github.com/asaka1234/go-tokenbases/utils"
 	"testing"
-	"time"
 )
+
+type VLog struct {
+}
+
+func (l VLog) Debugf(format string, args ...interface{}) {
+	fmt.Printf(format+"\n", args...)
+}
+func (l VLog) Infof(format string, args ...interface{}) {
+	fmt.Printf(format+"\n", args...)
+}
+func (l VLog) Warnf(format string, args ...interface{}) {
+	fmt.Printf(format+"\n", args...)
+}
+func (l VLog) Errorf(format string, args ...interface{}) {
+	fmt.Printf(format+"\n", args...)
+}
 
 func TestCreateAddress(t *testing.T) {
 
+	vlog := VLog{}
 	//构造client
-	cli := NewClient(nil, &TokenBasesInitParams{MERCHANT_ID, ACCESS_KEY, CreateAddressUrl, WITHDRAW_URL})
+	cli := NewClient(vlog, &TokenBasesInitParams{MERCHANT_ID, ACCESS_KEY, BASE_URL})
 	cli.SetDebugModel(true)
 	//发请求
 	resp, err := cli.CreateAddress(GenCreateAddressDemo())
@@ -23,14 +38,8 @@ func TestCreateAddress(t *testing.T) {
 
 func GenCreateAddressDemo() TokenBasesCreateAddressReq {
 
-	nonce, _ := utils.RandInt32()
-
 	return TokenBasesCreateAddressReq{
-		Timestamp: time.Now().Unix(),
-		Nonce:     nonce,
-		Body: CreateAddressBody{
-			ChainName: "TRX", //商户uid
-			Count:     5,
-		},
+		ChainName: "TRX", //商户uid
+		Count:     5,
 	}
 }

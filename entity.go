@@ -4,21 +4,22 @@ type TokenBasesInitParams struct {
 	MerchantId string `json:"merchantId" mapstructure:"merchantId" config:"merchantId"  yaml:"merchantId"` // merchantId
 	AccessKey  string `json:"accessKey" mapstructure:"accessKey" config:"accessKey"  yaml:"accessKey"`
 
-	CreateAddressUrl string `json:"createAddressUrl" mapstructure:"createAddressUrl" config:"createAddressUrl"  yaml:"createAddressUrl"`
-	WithdrawUrl      string `json:"withdrawUrl" mapstructure:"withdrawUrl" config:"withdrawUrl"  yaml:"withdrawUrl"`
+	BaseUrl string `json:"BaseUrl" mapstructure:"BaseUrl" config:"BaseUrl"  yaml:"BaseUrl"`
+}
+
+// ----------create address-------------------------
+
+type TokenBasesReq struct {
+	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
+	Nonce     int32  `json:"nonce" mapstructure:"nonce"`
+	Body      string `json:"body" mapstructure:"body"`
+	//sdk赋值
+	//Sign string `json:"sign" mapstructure:"sign"`
 }
 
 // ----------create address-------------------------
 
 type TokenBasesCreateAddressReq struct {
-	Timestamp int64             `json:"timestamp" mapstructure:"timestamp"`
-	Nonce     int32             `json:"nonce" mapstructure:"nonce"`
-	Body      CreateAddressBody `json:"body" mapstructure:"body"`
-	//sdk赋值
-	//Sign string `json:"sign" mapstructure:"sign"`
-}
-
-type CreateAddressBody struct {
 	ChainName string `json:"chainName" mapstructure:"chainName"`
 	Count     int    `json:"count" mapstructure:"count"` //TODO 实际没用,因为每次只返回唯一一个.
 	//sdk赋值
@@ -46,15 +47,8 @@ type AddressContent struct {
 
 //===========withdraw===================================
 
-type TokenBasesWithdrawReq struct {
-	Timestamp int64               `json:"timestamp" mapstructure:"timestamp"`
-	Nonce     int32               `json:"nonce" mapstructure:"nonce"`
-	Body      WithdrawBodyContent `json:"body" mapstructure:"body"`
-	//Sign      string              `json:"sign" mapstructure:"sign"`
-}
-
 // 对应上边的body
-type WithdrawBodyContent struct {
+type TokenBasesWithdrawReq struct {
 	Address    string `json:"address" mapstructure:"address"`       //接收地址，必须为有效区块链地址
 	Amount     string `json:"amount" mapstructure:"amount"`         //提现金额
 	ChainName  string `json:"chainName" mapstructure:"chainName"`   //主链类型，例如 `ETH` 或 `BTC`
@@ -86,12 +80,32 @@ type WithdrawRespDataBodyContent struct {
 
 // ----------充值 回调-------------------------
 
-type TokenBasesDepositCallbackReq struct {
+// 通用---
+type TokenBasesCallbackReq struct {
 	Body      string `json:"body" mapstructure:"body"`
 	Nonce     int    `json:"nonce" mapstructure:"nonce"`
 	Sign      string `json:"sign" mapstructure:"sign"`
 	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
 }
+
+// 通用---
+// 这个是返回
+type TokenBasesCallbackResp struct {
+	Errno  string         `json:"errno" mapstructure:"errno"` //“000“:成功
+	Errmsg string         `json:"errmsg" mapstructure:"errmsg"`
+	Data   []CallbackData `json:"data" mapstructure:"data"` //响应数据内容(用于验证签名),正常/异常响应都必须保证字段完整性，包括签名信息----适用于所有回调接口
+}
+
+// 通用---
+// 上述data实际是 []DepositConfirmData
+type CallbackData struct {
+	Body      string `json:"body" mapstructure:"body"`
+	Nonce     int32  `json:"nonce" mapstructure:"nonce"`
+	Sign      string `json:"sign" mapstructure:"sign"`
+	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
+}
+
+//========================================================
 
 // body的内容
 type DepositCallbackBodyContent struct {
@@ -106,30 +120,6 @@ type DepositCallbackBodyContent struct {
 	Symbol      string `json:"symbol" mapstructure:"symbol"`
 	TxID        string `json:"txId" mapstructure:"txId"`
 	Type        int    `json:"type" mapstructure:"type"` //交易类型 1：充值，2：提现，3：归集
-}
-
-// 这个是返回
-type TokenBasesDepositCallbackResp struct {
-	Errno  string                `json:"errno" mapstructure:"errno"` //“000“:成功
-	Errmsg string                `json:"errmsg" mapstructure:"errmsg"`
-	Data   []DepositCallbackData `json:"data" mapstructure:"data"` //响应数据内容(用于验证签名),正常/异常响应都必须保证字段完整性，包括签名信息----适用于所有回调接口
-}
-
-// 上述data实际是 []DepositConfirmData
-type DepositCallbackData struct {
-	Body      string `json:"body" mapstructure:"body"`
-	Nonce     int32  `json:"nonce" mapstructure:"nonce"`
-	Sign      string `json:"sign" mapstructure:"sign"`
-	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
-}
-
-//========================================================
-
-type TokenBasesWithdrawCallbackReq struct {
-	Body      string `json:"body" mapstructure:"body"`
-	Nonce     int    `json:"nonce" mapstructure:"nonce"`
-	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
-	Sign      string `json:"sign" mapstructure:"sign"`
 }
 
 // 对上上边的Body
@@ -147,18 +137,4 @@ type WithdrawCallbackBodyContent struct {
 	Type        int    `json:"type" mapstructure:"type"`
 	BusinessID  string `json:"businessId" mapstructure:"businessId"` //业务id
 	TransID     int64  `json:"transId" mapstructure:"transId"`
-}
-
-// response
-type TokenBasesWithdrawCallbackResp struct {
-	Errno  string                               `json:"errno" mapstructure:"errno"`
-	Errmsg string                               `json:"errmsg" mapstructure:"errmsg"`
-	Data   []TokenBasesWithdrawCallbackDataItem `json:"data" mapstructure:"data"`
-}
-
-type TokenBasesWithdrawCallbackDataItem struct {
-	Body      string `json:"body" mapstructure:"body"`
-	Nonce     int32  `json:"nonce" mapstructure:"nonce"`
-	Sign      string `json:"sign" mapstructure:"sign"`
-	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
 }
