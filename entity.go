@@ -136,5 +136,5 @@ type WithdrawCallbackBodyContent struct {
 	Symbol      string `json:"symbol" mapstructure:"symbol"`
 	Type        int    `json:"type" mapstructure:"type"`
 	BusinessID  string `json:"businessId" mapstructure:"businessId"` //业务id
-	TransID     int64  `json:"transId" mapstructure:"transId"`
+	TransID     int64  `json:"transId" mapstructure:"transId"`       //交易类型 1：充值，2：提现，3：归集
 }

@@ -27,6 +27,15 @@ func (cli *Client) DepositCallBack(req TokenBasesCallbackReq, processor func(Dep
 		return err
 	}
 
+	if bodyContent.MerchantID != cli.Params.MerchantId {
+		return errors.New("merchantId is unmatch!")
+	}
+
+	// 交易类型 1：充值，2：提现，3：归集
+	if bodyContent.Type != 1 {
+		return errors.New("type is unmatch!")
+	}
+
 	//开始处理body内容
 	return processor(bodyContent)
 }
@@ -50,6 +59,15 @@ func (cli *Client) WithdrawCallBack(req TokenBasesCallbackReq, processor func(Wi
 	err := json.Unmarshal([]byte(req.Body), &bodyContent)
 	if err != nil {
 		return err
+	}
+
+	if bodyContent.MerchantID != cli.Params.MerchantId {
+		return errors.New("merchantId is unmatch!")
+	}
+
+	// 交易类型 1：充值，2：提现，3：归集
+	if bodyContent.Type != 2 {
+		return errors.New("type is unmatch!")
 	}
 
 	//开始处理
