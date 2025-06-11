@@ -1,39 +1,21 @@
 package go_tokenbases
 
-/*
+import (
+	"errors"
+	"github.com/asaka1234/go-tokenbases/utils"
+	"github.com/mitchellh/mapstructure"
+)
+
 // 充值的回调处理(传入一个处理函数)
-func (cli *Client) DepositCancelCallback(req TokenBasesDepositCancelBackReq, processor func(TokenBasesDepositCancelBackReq) error) error {
+func (cli *Client) DepositCallBack(req TokenBasesDepositCallbackReq, processor func(TokenBasesDepositCallbackReq) error) error {
 	//验证签名
 	var params map[string]interface{}
 	mapstructure.Decode(req, &params)
 
-	verifyResult := utils.VerifySignDeposit(params, cli.Params.BackKey)
+	verifyResult := utils.VerifySign(params, cli.Params.AccessKey)
 	if !verifyResult {
 		//验签失败
 		return errors.New("verify sign error!")
-	}
-	if req.SysNo != cli.Params.MerchantId {
-		return errors.New("merchanID is wrong!")
-	}
-
-	//开始处理
-	return processor(req)
-}
-
-// 充值的回调处理(传入一个处理函数)
-func (cli *Client) DepositSucceedCallBack(req TokenBasesDepositSucceedBackReq, processor func(TokenBasesDepositSucceedBackReq) error) error {
-	//验证签名
-	params := map[string]interface{}{
-		"bill_no": req.BillNo, //只是value的拼接
-	}
-
-	verifyResult := utils.VerifySignWithdraw(params, cli.Params.BackKey)
-	if !verifyResult {
-		//验签失败
-		return errors.New("verify sign error!")
-	}
-	if req.SysNo != cli.Params.MerchantId {
-		return errors.New("merchanID is wrong!")
 	}
 
 	//开始处理
@@ -43,43 +25,17 @@ func (cli *Client) DepositSucceedCallBack(req TokenBasesDepositSucceedBackReq, p
 //==========================================
 
 // 充值的回调处理(传入一个处理函数)
-func (cli *Client) WithdrawCancelCallBack(req TokenBasesWithdrawCancelBackReq, processor func(TokenBasesWithdrawCancelBackReq) error) error {
+func (cli *Client) WithdrawCallBack(req TokenBasesWithdrawCallbackReq, processor func(TokenBasesWithdrawCallbackReq) error) error {
 	//验证签名
 	var params map[string]interface{}
 	mapstructure.Decode(req, &params)
 
-	verifyResult := utils.VerifySignDeposit(params, cli.Params.BackKey)
+	verifyResult := utils.VerifySign(params, cli.Params.AccessKey)
 	if !verifyResult {
 		//验签失败
 		return errors.New("verify sign error!")
-	}
-	if req.SysNo != cli.Params.MerchantId {
-		return errors.New("merchanID is wrong!")
 	}
 
 	//开始处理
 	return processor(req)
 }
-
-// 充值的回调处理(传入一个处理函数)
-func (cli *Client) WithdrawSucceedCallBack(req TokenBasesWithdrawSucceedBackReq, processor func(TokenBasesWithdrawSucceedBackReq) error) error {
-	//验证签名
-	params := map[string]interface{}{
-		"bill_no": req.BillNo, //只是value的拼接
-	}
-
-	verifyResult := utils.VerifySignWithdraw(params, cli.Params.BackKey)
-	if !verifyResult {
-		//验签失败
-		return errors.New("verify sign error!")
-	}
-	if req.SysNo != cli.Params.MerchantId {
-		return errors.New("merchanID is wrong!")
-	}
-
-	//开始处理
-	return processor(req)
-}
-
-
-*/

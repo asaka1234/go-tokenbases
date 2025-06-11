@@ -1,27 +1,36 @@
 package go_tokenbases
 
-/*
+import (
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"github.com/asaka1234/go-tokenbases/utils"
+	"github.com/mitchellh/mapstructure"
+)
+
 // withdraw
-func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*TokenBasesWithdrawResponse, error) {
+func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*TokenBasesWithdrawResp, error) {
 
 	rawURL := cli.Params.WithdrawUrl
 
-	jsonData, err := json.Marshal(req.Data)
-	if err != nil {
-		return nil, err
-	}
-	params := make(map[string]interface{})
-	params["data"] = string(jsonData)
-	params["sys_no"] = cli.Params.MerchantId
+	var params map[string]interface{}
+	mapstructure.Decode(req, &params)
+
+	//补充字段
+	body := params["body"].(map[string]interface{})
+	body["merchantId"] = cli.Params.MerchantId
+
+	bd, _ := json.Marshal(body)
+	params["body"] = string(bd)
 
 	//签名
-	signStr := utils.SignWithdraw(params, cli.Params.AccessKey)
+	signStr := utils.Sign(params, cli.Params.AccessKey)
 	params["sign"] = signStr
 
 	//返回值会放到这里
-	var result TokenBasesWithdrawResponse
+	var result TokenBasesWithdrawResp
 
-	_, err = cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
+	resp, err := cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).
 		R().
 		SetHeaders(getHeaders()).
@@ -30,11 +39,12 @@ func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*TokenBasesWithdrawRespo
 		SetResult(&result).
 		Post(rawURL)
 
-	if err != nil {
+	if err != nil || resp.StatusCode() != 200 {
 		return nil, err
 	}
 
+	fmt.Printf("url:%s\n", rawURL)
+	fmt.Printf("resp:%d, %+v\n", resp.StatusCode(), string(resp.Body()))
+
 	return &result, err
 }
-
-*/

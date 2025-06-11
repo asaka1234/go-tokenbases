@@ -38,7 +38,7 @@ func (cli *Client) CreateAddress(req TokenBasesCreateAddressReq) (*TokenBasesCre
 		SetResult(&result).
 		Post(rawURL)
 
-	if err != nil {
+	if err != nil || resp.StatusCode() != 200 {
 		return nil, err
 	}
 

@@ -8,7 +8,7 @@ type TokenBasesInitParams struct {
 	WithdrawUrl      string `json:"withdrawUrl" mapstructure:"withdrawUrl" config:"withdrawUrl"  yaml:"withdrawUrl"`
 }
 
-// ----------pre order-------------------------
+// ----------create address-------------------------
 
 type TokenBasesCreateAddressReq struct {
 	Timestamp int64             `json:"timestamp" mapstructure:"timestamp"`
@@ -26,151 +26,134 @@ type CreateAddressBody struct {
 }
 
 type TokenBasesCreateAddressResp struct {
-	Code    int    `json:"code" mapstructure:"code"`
-	Message string `json:"message" mapstructure:"message"`
-	Data    Data   `json:"data" mapstructure:"data"`
+	Code    int               `json:"code" mapstructure:"code"`
+	Message string            `json:"message" mapstructure:"message"`
+	Data    CreateAddressData `json:"data" mapstructure:"data"`
 }
 
-type Data struct {
+type CreateAddressData struct {
 	Body      string `json:"body" mapstructure:"body"`
 	Nonce     int    `json:"nonce" mapstructure:"nonce"`
 	Sign      string `json:"sign" mapstructure:"sign"`
 	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
 }
 
-// If you need to parse the body content separately
+// CreateAddressData的Body是如下struct的json字符串
 type AddressContent struct {
 	Address   []string `json:"address" mapstructure:"address"`
 	ChainName string   `json:"chainName" mapstructure:"chainName"`
 }
 
-//=========
-
-type TokenBasesDepositReq struct {
-	OrderId     string `json:"order_id" mapstructure:"order_id"`           // 订单ID
-	OrderAmount string `json:"order_amount" mapstructure:"order_amount"`   // 订单金额
-	UserId      string `json:"user_id" mapstructure:"user_id"`             // 用户ID
-	OrderIp     string `json:"order_ip" mapstructure:"order_ip"`           // 订单IP
-	PayUserName string `json:"pay_user_name" mapstructure:"pay_user_name"` // 付款人姓名
-	//这个是TokenBases给分配的商户id
-	//SysNo string `json:"sys_no" mapstructure:"sys_no"` // 系统编号
-	//这个让sdk来赋值
-	//OrderTime string `json:"order_time" mapstructure:"order_time"` // 订单时间 格式:yyyy-MM-dd HH:mm:ss
-}
-
-// 不管是正确/失败的通用字段返回
-type TokenBasesDepositCommonResponse struct {
-	Code   int    `json:"code"`   // 111 是正确
-	Status string `json:"status"` //success 是正确
-	Msg    string `json:"msg"`
-}
-
-type TokenBasesDepositResponse struct {
-	Code   int                            `json:"code" mapstructure:"code"`     // 111 是正确
-	Status string                         `json:"status" mapstructure:"status"` //success 是正确
-	Msg    string                         `json:"msg" mapstructure:"msg"`
-	Data   *TokenBasesDepositResponseData `json:"data" mapstructure:"data"`
-}
-
-type TokenBasesDepositResponseData struct {
-	OrderNo string `json:"order_no" mapstructure:"order_no"` // 订单编号
-	SendUrl string `json:"send_url" mapstructure:"send_url"` // 发送URL
-	UserId  string `json:"user_id" mapstructure:"user_id"`   // 用户ID
-}
-
-// ------------------------------------------------------------
-type TokenBasesDepositCancelBackReq struct {
-	BillNo     string `json:"bill_no" mapstructure:"bill_no"`         // 唯一订单号，商户下单时传过来的order_id
-	BillStatus int    `json:"bill_status" mapstructure:"bill_status"` // 订单状态：1=订单已取消；2=订单已激活
-	SysNo      string `json:"sys_no" mapstructure:"sys_no"`           // 商户编号
-	Sign       string `json:"sign" mapstructure:"sign"`               // 签名，参照验签规范
-}
-
-type TokenBasesDepositSucceedBackReq struct {
-	BillNo string `json:"bill_no" mapstructure:"bill_no"` // 必须包含订单号
-	Amount string `json:"amount" mapstructure:"amount"`   // 必须是数字字符串
-	SysNo  string `json:"sys_no" mapstructure:"sys_no"`   // 必须包含商户号
-	Sign   string `json:"sign" mapstructure:"sign"`       // 必须包含签名
-}
-
 //===========withdraw===================================
 
 type TokenBasesWithdrawReq struct {
-	Data []TokenBasesWithdrawData `json:"data" mapstructure:"data"` // 申请sys_no唯一标识 610001
-	//这个是TokenBases给分配的商户id ,sdk来赋值
-	//SysNo string `json:"sys_no" mapstructure:"sys_no"` // 申请sys_no唯一标识 610001号
+	Timestamp int64               `json:"timestamp" mapstructure:"timestamp"`
+	Nonce     int                 `json:"nonce" mapstructure:"nonce"`
+	Body      WithdrawBodyContent `json:"body" mapstructure:"body"`
+	//Sign      string              `json:"sign" mapstructure:"sign"`
 }
 
-type TokenBasesWithdrawData struct {
-	UserName    string `json:"user_name" mapstructure:"user_name"`       // 真实姓名
-	BankCardNo  string `json:"bankcard_no" mapstructure:"bankcard_no"`   // 卡号
-	SerialNo    string `json:"serial_no" mapstructure:"serial_no"`       // 订单号
-	BankAddress string `json:"bank_address" mapstructure:"bank_address"` // 支行地址
-	Amount      string `json:"amount" mapstructure:"amount"`             // 金额
+type WithdrawBodyContent struct {
+	Address    string `json:"address" mapstructure:"address"`
+	Amount     string `json:"amount" mapstructure:"amount"`
+	ChainName  string `json:"chainName" mapstructure:"chainName"`
+	BusinessID string `json:"businessId" mapstructure:"businessId"`
+	Memo       string `json:"memo" mapstructure:"memo"`
+	TokenName  string `json:"tokenName" mapstructure:"tokenName"`
+	//MerchantID string `json:"merchantId" mapstructure:"merchantId"`
 }
 
-type TokenBasesWithdrawResponse struct {
-	Code int    `json:"code"` //200是成功
-	Msg  string `json:"msg"`
+// 返回response
+type TokenBasesWithdrawResp struct {
+	Code    int              `json:"code" mapstructure:"code"`
+	Message string           `json:"message" mapstructure:"message"`
+	Data    WithdrawRespData `json:"data" mapstructure:"data"`
 }
 
-type TokenBasesWithdrawCancelBackReq struct {
-	BillNo     string `json:"bill_no" mapstructure:"bill_no"`         // 唯一订单号，商户下单时传过来的order_id
-	BillStatus int    `json:"bill_status" mapstructure:"bill_status"` // 订单状态：1=订单已取消；2=订单已激活
-	SysNo      string `json:"sys_no" mapstructure:"sys_no"`           // 商户编号
-	Sign       string `json:"sign" mapstructure:"sign"`               // 签名，参照验签规范
+type WithdrawRespData struct {
+	Body      string `json:"body" mapstructure:"body"`
+	Nonce     int    `json:"nonce" mapstructure:"nonce"`
+	Sign      string `json:"sign" mapstructure:"sign"`
+	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
 }
 
-type TokenBasesWithdrawSucceedBackReq struct {
-	BillNo string `json:"bill_no" mapstructure:"bill_no"` // 唯一订单号，商户下单时传过来的order_id
-	Amount string `json:"amount" mapstructure:"amount"`   //订单金额
-	SysNo  string `json:"sys_no" mapstructure:"sys_no"`   //商户编号
-	Sign   string `json:"sign" mapstructure:"sign"`       //签名，参照验签规范
+// WithdrawRespData的body是如下的Json字符串
+type WithdrawRespDataBodyContent struct {
+	Success bool  `json:"success" mapstructure:"success"`
+	TransID int64 `json:"transId" mapstructure:"transId"`
 }
 
-// ----------withdraw confirm-------------------------
+// ----------充值 回调-------------------------
 
-// callback以后,还要单独发个请求再来查询下.
-type TokenBasesWithdrawConfirmReq struct {
-	Ids string `json:"ids" mapstructure:"ids"` //确认收款订单列表接口中获取的id，用英文逗号“,”拼接起来
-	//这个是TokenBases给分配的商户id ,sdk来赋值
-	//SysNo string `json:"sys_no" mapstructure:"sys_no"` // 申请sys_no唯一标识 610001号
+type TokenBasesDepositCallbackReq struct {
+	Body      DepositCallbackBodyContent `json:"body" mapstructure:"body"`
+	Nonce     int                        `json:"nonce" mapstructure:"nonce"`
+	Sign      string                     `json:"sign" mapstructure:"sign"`
+	Timestamp int64                      `json:"timestamp" mapstructure:"timestamp"`
 }
 
-type TokenBasesWithdrawConfirmResponse struct {
-	Code string `json:"code"` //
-	Msg  string `json:"msg"`
+type DepositCallbackBodyContent struct {
+	AddressFrom string `json:"addressFrom" mapstructure:"addressFrom"`
+	AddressTo   string `json:"addressTo" mapstructure:"addressTo"`
+	Amount      string `json:"amount" mapstructure:"amount"`
+	ChainName   string `json:"chainName" mapstructure:"chainName"`
+	Confirm     int    `json:"confirm" mapstructure:"confirm"` //确认数
+	ConfirmTime int64  `json:"confirmTime" mapstructure:"confirmTime"`
+	Fee         string `json:"fee" mapstructure:"fee"`
+	MerchantID  string `json:"merchantId" mapstructure:"merchantId"`
+	Symbol      string `json:"symbol" mapstructure:"symbol"`
+	TxID        string `json:"txId" mapstructure:"txId"`
+	Type        int    `json:"type" mapstructure:"type"` //交易类型 1：充值，2：提现，3：归集
 }
 
-// =================单独请求===============================
-
-type TokenBasesOrderListRsp struct {
-	Code   string                    `json:"code"` //
-	Msg    string                    `json:"msg"`
-	Result TokenBasesOrderPageResult `json:"result"`
+type TokenBasesDepositConfirmResp struct {
+	Errno  string               `json:"errno" mapstructure:"errno"` //“000“:成功
+	Errmsg string               `json:"errmsg" mapstructure:"errmsg"`
+	Data   []DepositConfirmData `json:"data" mapstructure:"data"` //响应数据内容(用于验证签名),正常/异常响应都必须保证字段完整性，包括签名信息----适用于所有回调接口
 }
 
-type TokenBasesOrderPageResult struct {
-	TotalCount string                 `json:"totalCount"` // 总记录数
-	TotalPage  int64                  `json:"totalPage"`  // 总页数
-	Page       int64                  `json:"page"`       // 当前页码
-	Data       []*TokenBasesOrderData `json:"data"`       // 订单数据列表
+type DepositConfirmData struct {
+	Body      string `json:"body" mapstructure:"body"`
+	Nonce     int    `json:"nonce" mapstructure:"nonce"`
+	Sign      string `json:"sign" mapstructure:"sign"`
+	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
 }
 
-type TokenBasesOrderData struct {
-	ID                       string `json:"id"`
-	SysSerialNo              string `json:"sysSerialNo"`
-	Amount                   string `json:"amount"`
-	PayType                  string `json:"payType"`
-	UserName                 string `json:"userName"`
-	BankCardNo               string `json:"bankCardNo"`
-	BankAddress              string `json:"bankAddress"`
-	ChangeRate               string `json:"changeRate"`
-	HandlingFee              string `json:"handlingFee"`
-	MerchantSettleUSDTNumber string `json:"merchantSettleUSDTNumber"`
-	SerialNo                 string `json:"serialNo"`
-	CreateTime               string `json:"createTime"`
-	Remark                   string `json:"remark"`
-	NumRow                   string `json:"numRow"`
-	StatusName               string `json:"statusName"`
+//========================================================
+
+type TokenBasesWithdrawCallbackReq struct {
+	Body      WithdrawCallbackBodyContent `json:"body" mapstructure:"body"`
+	Nonce     int                         `json:"nonce" mapstructure:"nonce"`
+	Timestamp int64                       `json:"timestamp" mapstructure:"timestamp"`
+	Sign      string                      `json:"sign" mapstructure:"sign"`
+}
+
+type WithdrawCallbackBodyContent struct {
+	AddressFrom string `json:"addressFrom" mapstructure:"addressFrom"`
+	AddressTo   string `json:"addressTo" mapstructure:"addressTo"`
+	TxID        string `json:"txId" mapstructure:"txId"`
+	Amount      string `json:"amount" mapstructure:"amount"`
+	Confirm     int    `json:"confirm" mapstructure:"confirm"`
+	ConfirmTime int64  `json:"confirmTime" mapstructure:"confirmTime"`
+	ChainName   string `json:"chainName" mapstructure:"chainName"`
+	MerchantID  string `json:"merchantId" mapstructure:"merchantId"`
+	Fee         string `json:"fee" mapstructure:"fee"`
+	Symbol      string `json:"symbol" mapstructure:"symbol"`
+	Type        int    `json:"type" mapstructure:"type"`
+	BusinessID  string `json:"businessId" mapstructure:"businessId"` //业务id
+	TransID     int64  `json:"transId" mapstructure:"transId"`
+}
+
+// response
+type TokenBasesWithdrawCallbackResp struct {
+	Errno  string                               `json:"errno" mapstructure:"errno"`
+	Errmsg string                               `json:"errmsg" mapstructure:"errmsg"`
+	Data   []TokenBasesWithdrawCallbackDataItem `json:"data" mapstructure:"data"`
+}
+
+type TokenBasesWithdrawCallbackDataItem struct {
+	Body      string `json:"body" mapstructure:"body"`
+	Nonce     int    `json:"nonce" mapstructure:"nonce"`
+	Sign      string `json:"sign" mapstructure:"sign"`
+	Timestamp int64  `json:"timestamp" mapstructure:"timestamp"`
 }
