@@ -3,13 +3,14 @@ package go_tokenbases
 import (
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/asaka1234/go-tokenbases/utils"
 	"github.com/mitchellh/mapstructure"
 )
 
 // withdraw
-func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*TokenBasesWithdrawResp, error) {
+func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*WithdrawRespDataBodyContent, error) {
 
 	rawURL := cli.Params.WithdrawUrl
 
@@ -34,17 +35,42 @@ func (cli *Client) Withdraw(req TokenBasesWithdrawReq) (*TokenBasesWithdrawResp,
 		SetCloseConnection(true).
 		R().
 		SetHeaders(getHeaders()).
-		SetMultipartFormData(utils.ConvertToStringMap(params)).
+		SetBody(params).
 		SetDebug(cli.debugMode).
 		SetResult(&result).
 		Post(rawURL)
 
-	if err != nil || resp.StatusCode() != 200 {
+	if err != nil || resp.StatusCode() != 200 || result.Code != 200 {
+		if err == nil {
+			err = fmt.Errorf("statusCode:%d, code:%d", resp.StatusCode(), result.Code)
+		}
 		return nil, err
 	}
 
-	fmt.Printf("url:%s\n", rawURL)
-	fmt.Printf("resp:%d, %+v\n", resp.StatusCode(), string(resp.Body()))
+	/*
+		//解析data
+		var data WithdrawRespData
+		err = json.Unmarshal([]byte(result.Data), &data)
+		if err != nil {
+			return nil, err
+		}
+	*/
 
-	return &result, err
+	//验证签名
+	var params2 map[string]interface{}
+	mapstructure.Decode(result.Data, &params2)
+	verifyResult := utils.VerifySign(params2, cli.Params.AccessKey)
+	if !verifyResult {
+		//验签失败
+		return nil, errors.New("verify sign error!")
+	}
+
+	//解析body
+	var bodyContent WithdrawRespDataBodyContent
+	err = json.Unmarshal([]byte(result.Data.Body), &bodyContent)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bodyContent, err
 }

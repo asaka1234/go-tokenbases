@@ -18,7 +18,7 @@ func TestCreateAddress(t *testing.T) {
 		fmt.Printf("err:%s\n", err.Error())
 		return
 	}
-	fmt.Printf("resp:%+v\n", resp)
+	fmt.Printf("final-resp:%+v\n", resp)
 }
 
 func GenCreateAddressDemo() TokenBasesCreateAddressReq {
