@@ -65,8 +65,8 @@ func (cli *Client) WithdrawCallBack(req TokenBasesCallbackReq, processor func(Wi
 		return errors.New("merchantId is unmatch!")
 	}
 
-	// 交易类型 1：充值，2：提现，3：归集
-	if bodyContent.Type != 2 {
+	// 交易类型 1：充值，2：提现，3：归集，4：提现失败
+	if bodyContent.Type != 2 && bodyContent.Type != 4 {
 		return errors.New("type is unmatch!")
 	}
 
